@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark;
+  logs: false;
+}
+
+/* ShebaSetu light theme */
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  color-scheme: light;
+
+  --color-base-100: #fbf8f2;
+  --color-base-200: #f3ede1;
+  --color-base-300: #e6dccb;
+  --color-base-content: #17231f;
+
+  --color-primary: #0f7a63;
+  --color-primary-content: #f0fbf6;
+  --color-secondary: #e0a33e;
+  --color-secondary-content: #2a1c04;
+  --color-accent: #d95f3b;
+  --color-accent-content: #fff4ef;
+  --color-neutral: #1b2b25;
+  --color-neutral-content: #eaf2ed;
+
+  --color-info: #2d7fa6;
+  --color-info-content: #f0faff;
+  --color-success: #1e8a5f;
+  --color-success-content: #f1fcf6;
+  --color-warning: #c98a1b;
+  --color-warning-content: #fff9ec;
+  --color-error: #c0453c;
+  --color-error-content: #fff3f1;
+
+  --radius-selector: 999rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* ShebaSetu dark theme */
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: false;
+  prefersdark: true;
+  color-scheme: dark;
+
+  --color-base-100: #0c1411;
+  --color-base-200: #111c18;
+  --color-base-300: #182620;
+  --color-base-content: #e8f1ec;
+
+  --color-primary: #4fd1ae;
+  --color-primary-content: #052018;
+  --color-secondary: #f0b45a;
+  --color-secondary-content: #2b1b04;
+  --color-accent: #f0805c;
+  --color-accent-content: #2a0e06;
+  --color-neutral: #21332b;
+  --color-neutral-content: #ddeae3;
+
+  --color-info: #6fb8d6;
+  --color-info-content: #061a23;
+  --color-success: #5fd3a0;
+  --color-success-content: #042016;
+  --color-warning: #f0c15c;
+  --color-warning-content: #251a02;
+  --color-error: #ef7a6e;
+  --color-error-content: #260a07;
+
+  --radius-selector: 999rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@theme inline {
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-heading), ui-serif, Georgia, serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    @apply bg-base-100 text-base-content font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display tracking-tight;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-primary) 28%, transparent);
+  }
+}
+
+@layer components {
+  .page-shell {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .section {
+    @apply py-16 sm:py-20 lg:py-24;
+  }
+
+  .section-kicker {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary;
+  }
+
+  .section-title {
+    @apply text-3xl font-semibold sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1];
+  }
+}
