@@ -3,8 +3,8 @@
 A modern, community-driven social service event management platform where citizens can organize, discover, join, and track local volunteer initiatives across Dhaka and beyond.
 
 - **Live Site URL:** [https://sdep-client.vercel.app](https://sdep-client.vercel.app) *(or your deployed production URL)*
-- **Server Repository:** [https://github.com/your-username/sdep-server](https://github.com/your-username/sdep-server)
-- **Client Repository:** [https://github.com/your-username/sdep-client](https://github.com/your-username/sdep-client)
+- **Server Repository:** [https://github.com/Asaduzzaman8088/sdep-server](https://github.com/Asaduzzaman8088/sdep-server)
+- **Client Repository:** [https://github.com/Asaduzzaman8088/sdep-client](https://github.com/Asaduzzaman8088/sdep-client)
 
 ---
 
