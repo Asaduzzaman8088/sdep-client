@@ -7,27 +7,31 @@ export function SiteLogo({ className = "" }: { className?: string }) {
   return (
     <Link
       href="/"
-      className={`group inline-flex items-center gap-2.5 ${className}`}
+      className={`group flex items-center gap-3 ${className}`}
       aria-label={`${siteConfig.name} home`}
     >
-      <span className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-xl bg-white shadow-sm transition-transform duration-300 group-hover:-rotate-6">
+      {/* Image Wrapper */}
+      <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white p-1 shadow-sm transition-transform duration-300 group-hover:-rotate-6">
         <Image
           src="/sdep-log.png"
-          alt=""
-          width={40}
-          height={40}
+          alt="SDEP Logo"
+          width={44}
+          height={44}
           className="size-full object-contain"
           priority
         />
-      </span>
-      <span className="flex flex-col leading-none">
-        <span className="font-display text-xl font-semibold tracking-tight">
+      </div>
+      
+      {/* Text Wrapper - Tightened to cover the full area */}
+      <div className="flex flex-col justify-center">
+        <span className="font-sans text-2xl font-bold tracking-tight text-base-content leading-[1.1]">
           {siteConfig.name}
         </span>
-        <span className="mt-1 text-[0.65rem] font-medium uppercase tracking-[0.22em] text-base-content/60">
-          Community Service
+        <span className="text-[0.65rem] font-medium uppercase tracking-[0.18em] text-base-content/70 leading-tight">
+          <span className="block">Social Development</span>
+          <span className="block">Event Platform</span>
         </span>
-      </span>
+      </div>
     </Link>
   );
 }

@@ -112,11 +112,12 @@ export function SiteFooter() {
               />
             </span>
             <span className="flex flex-col leading-none">
-              <span className="font-display text-xl font-semibold tracking-tight text-white">
+              <span className="font-sans text-xl font-semibold tracking-tight text-white">
                 {siteConfig.name}
               </span>
               <span className="mt-1 text-[0.65rem] font-medium uppercase tracking-[0.22em] text-white/50">
-                Community Service
+                Social Development <br/>
+                Events Platform
               </span>
             </span>
           </Link>
@@ -188,10 +189,10 @@ export function SiteFooter() {
             <li className="flex items-start gap-3">
               <Mail className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
               <a
-                href="mailto:hello@shebasetu.org"
+                href="mailto:hello@sdep.org"
                 className="transition-colors hover:text-primary"
               >
-                hello@shebasetu.org
+                hello@sdep.org
               </a>
             </li>
             <li className="flex items-start gap-3">
