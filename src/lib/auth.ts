@@ -28,11 +28,11 @@ const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET ?? "";
 const googleEnabled = Boolean(googleClientId && googleClientSecret);
 
 export const auth = betterAuth({
-  appName: "ShebaSetu",
+  appName: "SDEP",
   baseURL: authBaseUrl,
   secret:
     process.env.BETTER_AUTH_SECRET ??
-    "shebasetu-development-secret-please-change-in-production",
+    "sdep-development-secret-please-change-in-production",
   database: mongodbAdapter(database, {
     client: mongoClient,
     transaction: false,
