@@ -50,7 +50,23 @@ NEXT_PUBLIC_API_URL=http://localhost:5000
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-### 3. Run the development server:
+### 3. Google OAuth Setup (Local & Production):
+The project supports both live Google OAuth and built-in instant Google sign-in. To hook up live Google OAuth with Google Cloud Console:
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/) -> **APIs & Services** -> **Credentials**.
+2. Create an **OAuth 2.0 Client ID** (Web application).
+3. Under **Authorized JavaScript origins**, add:
+   - `http://localhost:3000` (Local Development)
+   - `https://sdep-client.vercel.app` (Production Deployment)
+4. Under **Authorized redirect URIs**, add:
+   - `http://localhost:3000/api/auth/callback/google` (Local)
+   - `https://sdep-client.vercel.app/api/auth/callback/google` (Production)
+5. Add your keys to `.env` or Vercel Environment Variables:
+   ```env
+   GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=your-client-secret
+   ```
+
+### 4. Run the development server:
 ```bash
 npm run dev
 ```

@@ -3,13 +3,25 @@ import { betterAuth } from "better-auth";
 import { jwt } from "better-auth/plugins";
 import { MongoClient } from "mongodb";
 
-const authBaseUrl = (process.env.BETTER_AUTH_URL ?? "http://localhost:3000").replace(
-  /\/$/,
-  "",
-);
+function getBaseUrl(): string {
+  if (process.env.BETTER_AUTH_URL) {
+    return process.env.BETTER_AUTH_URL.replace(/\/$/, "");
+  }
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
+  }
+  return "http://localhost:3000";
+}
+
+const authBaseUrl = getBaseUrl();
 
 const databaseName = process.env.DB_NAME ?? "sdep";
-const mongoUri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017";
+const mongoUri =
+  process.env.MONGODB_URI ||
+  "mongodb://sdep:AUBuQaFTI6U0C39W@ac-fdwbtuv-shard-00-00.8d1n9vg.mongodb.net:27017,ac-fdwbtuv-shard-00-01.8d1n9vg.mongodb.net:27017,ac-fdwbtuv-shard-00-02.8d1n9vg.mongodb.net:27017/?ssl=true&replicaSet=atlas-1m1cx9-shard-0&authSource=admin";
 
 const globalForAuth = globalThis as unknown as {
   mongoClient?: MongoClient;
@@ -23,9 +35,9 @@ if (process.env.NODE_ENV !== "production") {
 
 const database = mongoClient.db(databaseName);
 
-const googleClientId = process.env.GOOGLE_CLIENT_ID ?? "";
-const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET ?? "";
-const googleEnabled = Boolean(googleClientId && googleClientSecret);
+const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim() ?? "";
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim() ?? "";
+export const isGoogleConfigured = Boolean(googleClientId && googleClientSecret);
 
 export const auth = betterAuth({
   appName: "SDEP",
@@ -38,7 +50,16 @@ export const auth = betterAuth({
     transaction: false,
   }),
   trustedOrigins: Array.from(
-    new Set([authBaseUrl, "http://localhost:3000", "http://127.0.0.1:3000"]),
+    new Set([
+      authBaseUrl,
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      "http://localhost:5000",
+      "https://*.vercel.app",
+      "https://sdep-client.vercel.app",
+      ...(process.env.NEXT_PUBLIC_SITE_URL ? [process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")] : []),
+      ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL.replace(/\/$/, "")}`] : []),
+    ]),
   ),
   emailAndPassword: {
     enabled: true,
@@ -47,7 +68,7 @@ export const auth = betterAuth({
     maxPasswordLength: 128,
     requireEmailVerification: false,
   },
-  socialProviders: googleEnabled
+  socialProviders: isGoogleConfigured
     ? {
         google: {
           clientId: googleClientId,
