@@ -1,57 +1,47 @@
 import {
   ArrowRight,
   CalendarHeart,
-  HeartHandshake,
   MapPin,
   Sparkles,
-  Sprout,
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
-import { SiteFooter } from "@/components/site-footer";
-import { SiteLogo } from "@/components/site-logo";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { RecentEventsSection } from "@/components/home/recent-events-section";
+import { CommunityGallery } from "@/components/home/community-gallery";
+import { NewsletterSection } from "@/components/home/newsletter-section";
 
-const promises = [
+const features = [
   {
     icon: MapPin,
-    title: "Causes close to home",
-    text: "Discover service events happening in your own neighborhood.",
+    title: "Causes Close to Home",
+    text: "Discover service events happening in your own neighborhood with real-time location filtering.",
   },
   {
     icon: Users,
-    title: "Built for communities",
-    text: "Create an event, gather volunteers, and see who is joining.",
+    title: "Built for Communities",
+    text: "Create an event, gather passionate volunteers, and see who is showing up to make an impact.",
   },
   {
     icon: CalendarHeart,
-    title: "Long-term impact",
-    text: "Track the events you have joined and the people you have helped.",
+    title: "Long-term Impact",
+    text: "Track the events you have joined, celebrate collective milestones, and help your city flourish.",
   },
+];
+
+const stats = [
+  { value: "1,450+", label: "Active Volunteers", color: "text-emerald-600" },
+  { value: "180+", label: "Events Completed", color: "text-green-500" },
+  { value: "24,000+", label: "Lives Impacted", color: "text-indigo-500" },
+  { value: "100%", label: "Community Driven", color: "text-amber-500" },
 ];
 
 export default function Home() {
   return (
-    <>
-      <main className="flex flex-1 flex-col">
-      <header className="page-shell grid grid-cols-[1fr_auto_1fr] items-center gap-4 py-5">
-        <SiteLogo />
-        <Link
-          href="/events"
-          className="btn btn-ghost btn-sm hidden justify-self-center sm:inline-flex"
-        >
-          Upcoming Events
-        </Link>
-        <div className="flex items-center justify-self-end gap-1">
-          <ThemeToggle />
-          <Link href="/login" className="btn btn-primary btn-sm">
-            Login
-          </Link>
-        </div>
-      </header>
-
-      <section className="relative overflow-hidden">
+    <div className="flex flex-col w-full pb-16">
+      {/* 1. HERO / BANNER SECTION */}
+      <section className="relative overflow-hidden flex-1">
         <div
           aria-hidden
           className="pointer-events-none absolute -top-24 right-[-10%] -z-10 size-[32rem] rounded-full bg-primary/15 blur-3xl"
@@ -61,112 +51,106 @@ export default function Home() {
           className="pointer-events-none absolute -bottom-32 left-[-12%] -z-10 size-[28rem] rounded-full bg-secondary/15 blur-3xl"
         />
 
-        <div className="page-shell grid items-center gap-14 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
+        <div className="page-shell grid items-center gap-8 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
           <div>
             <span className="section-kicker">
               <Sparkles className="size-4" aria-hidden />
               Community-powered social impact
             </span>
-            <h1 className="mt-5 max-w-2xl text-4xl leading-[1.05] font-semibold sm:text-5xl lg:text-6xl">
+            <h1 className="mt-5 max-w-2xl text-4xl leading-[1.05] font-extrabold sm:text-5xl lg:text-6xl tracking-tight text-base-content">
               Small acts of service,{" "}
               <span className="text-primary">multiplied</span> by your
               neighborhood.
             </h1>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-base-content/70 sm:text-lg">
-              ShebaSetu brings neighbors together around cleanup drives, plantation
-              days, donation runs, and health camps. Find a cause near you, or start
-              something your community needs.
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-base-content/75 sm:text-lg">
+              SDEP brings neighbors together around cleanup drives, tree plantation
+              days, winter clothes donation runs, and free health camps. Find a cause near you, or start
+              something your community needs today.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/events" className="btn btn-primary btn-lg">
+              <Link href="/upcoming-events" className="btn btn-primary btn-lg rounded-full font-bold shadow-md">
                 Explore upcoming events
                 <ArrowRight className="size-4" aria-hidden />
               </Link>
-              <Link href="/events/create" className="btn btn-outline btn-lg">
+              <Link href="/create-event" className="btn btn-outline btn-lg rounded-full font-bold">
                 Start an event
               </Link>
             </div>
           </div>
 
+          {/* Right side Hero Card with Image */}
           <div className="relative mx-auto w-full max-w-md">
-            <div className="card rounded-box border border-base-300/80 bg-base-100/85 shadow-xl backdrop-blur">
-              <div className="card-body gap-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-base-content/50">
-                      This weekend
-                    </p>
-                    <h2 className="mt-2 text-2xl font-semibold">
-                      Service, one neighborhood at a time
-                    </h2>
-                  </div>
-                  <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary">
-                    <HeartHandshake className="size-5" aria-hidden />
-                  </span>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <span className="badge badge-primary badge-soft">
-                    <Sprout className="size-3.5" aria-hidden />
-                    Plantation
-                  </span>
-                  <span className="badge badge-secondary badge-soft">
-                    Donation
-                  </span>
-                  <span className="badge badge-accent badge-soft">Cleanup</span>
-                  <span className="badge badge-ghost">Health Camp</span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3">
-                  {promises.map((item) => (
-                    <div
-                      key={item.title}
-                      className="rounded-xl bg-base-200/70 p-3 text-center"
-                    >
-                      <item.icon className="mx-auto size-5 text-primary" aria-hidden />
-                      <p className="mt-2 text-[0.7rem] leading-snug font-medium text-base-content/70">
-                        {item.title}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-
-                <p className="text-sm leading-relaxed text-base-content/65">
-                  Free to join, open to everyone, and focused on real local needs.
-                </p>
-              </div>
-            </div>
-
-            <div className="card absolute -bottom-6 -left-4 hidden w-44 rounded-box border border-base-300/80 bg-base-100 p-4 shadow-lg sm:block">
-              <p className="text-xs text-base-content/55">Your impact</p>
-              <p className="mt-1 font-display text-2xl font-semibold text-primary">
-                Every hour counts
-              </p>
+            <div className="relative aspect-[4/3] rounded-3xl border border-base-300/80 bg-base-100 shadow-xl overflow-hidden">
+              <Image
+                src="/Winter photo.avif"
+                alt="Community Service Drive in Dhaka"
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 450px"
+                className="size-full object-cover"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="page-shell grid gap-4 pb-20 sm:grid-cols-3">
-        {promises.map((item) => (
-          <div
-            key={item.title}
-            className="card rounded-box border border-base-300/70 bg-base-100"
-          >
-            <div className="card-body gap-2">
-              <span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
-                <item.icon className="size-5" aria-hidden />
-              </span>
-              <h2 className="mt-1 text-lg font-semibold">{item.title}</h2>
-              <p className="text-sm leading-relaxed text-base-content/65">
-                {item.text}
-              </p>
+      {/* STATS STRIP */}
+      <section className="page-shell py-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {stats.map((stat, i) => (
+            <div key={i} className="card bg-base-100 border border-base-200 shadow-xs rounded-2xl">
+              <div className="card-body items-center text-center p-6">
+                <h3 className={`text-3xl font-extrabold ${stat.color}`}>{stat.value}</h3>
+                <p className="text-xs sm:text-sm font-medium text-base-content/70">{stat.label}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </section>
-      </main>
-      <SiteFooter />
-    </>
+
+      {/* 2. FEATURES SECTION */}
+      <section className="page-shell py-12">
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <span className="section-kicker justify-center">
+            <Sparkles className="size-4" aria-hidden />
+            Why SDEP
+          </span>
+          <h2 className="section-title mt-2">
+            Built for Grassroots <span className="text-primary">Action</span>
+          </h2>
+          <p className="mt-2 text-sm text-base-content/70">
+            A seamless platform built to turn good intentions into organized neighborhood action.
+          </p>
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-3">
+          {features.map((item) => (
+            <div
+              key={item.title}
+              className="card rounded-3xl border border-base-300/80 bg-base-100 p-2 shadow-xs hover:shadow-md transition-shadow"
+            >
+              <div className="card-body gap-3">
+                <span className="grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary">
+                  <item.icon className="size-6" aria-hidden />
+                </span>
+                <h3 className="mt-2 text-xl font-bold text-base-content">{item.title}</h3>
+                <p className="text-sm leading-relaxed text-base-content/70">
+                  {item.text}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 3. RECENT UPCOMING EVENTS SECTION (Dynamic 6 events from DB) */}
+      <RecentEventsSection />
+
+      {/* 4. GALLERY SECTION */}
+      <CommunityGallery />
+
+      {/* 5. NEWSLETTER SECTION */}
+      <NewsletterSection />
+    </div>
   );
 }
