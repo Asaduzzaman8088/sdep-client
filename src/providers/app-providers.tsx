@@ -44,7 +44,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
       themes={["light", "dark"]}
-      storageKey="shebasetu-theme"
+      storageKey="sdep-theme"
     >
       <QueryClientProvider client={queryClient}>
         {children}
