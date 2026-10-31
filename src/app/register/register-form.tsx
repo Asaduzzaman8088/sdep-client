@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Eye, EyeOff, X } from "lucide-react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
@@ -71,7 +70,7 @@ export function RegisterForm() {
     }
 
     clearAuthTokenCache();
-    toast.success("Account created. Welcome to ShebaSetu.");
+    toast.success("Account created. Welcome to SDEP.");
     router.replace(nextPath);
     router.refresh();
   };
@@ -212,14 +211,6 @@ export function RegisterForm() {
       <div className="divider my-0 text-xs text-base-content/45">or</div>
 
       <GoogleButton callbackURL={nextPath} />
-
-      <p className="text-center text-xs leading-relaxed text-base-content/50">
-        Already registered?{" "}
-        <Link href="/login" className="link link-primary">
-          Sign in here
-        </Link>
-        .
-      </p>
     </div>
   );
 }

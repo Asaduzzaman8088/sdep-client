@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -127,14 +126,6 @@ export function LoginForm() {
       <div className="divider my-0 text-xs text-base-content/45">or</div>
 
       <GoogleButton callbackURL={nextPath} />
-
-      <p className="text-center text-xs leading-relaxed text-base-content/50">
-        Use the email and password you registered with. Need an account?{" "}
-        <Link href="/register" className="link link-primary">
-          Register here
-        </Link>
-        .
-      </p>
     </div>
   );
 }

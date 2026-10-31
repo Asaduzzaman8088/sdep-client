@@ -8,7 +8,7 @@ import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
   title: "Sign in",
-  description: "Sign in to ShebaSetu to create and join community service events.",
+  description: "Sign in to SDEP to create and join community service events.",
 };
 
 export default function LoginPage() {
@@ -18,7 +18,7 @@ export default function LoginPage() {
       subtitle="Sign in to join service days, manage your events, and keep your community moving."
       footer={
         <>
-          New to ShebaSetu?{" "}
+          New to SDEP?{" "}
           <Link href="/register" className="link link-primary font-medium">
             Create an account
           </Link>

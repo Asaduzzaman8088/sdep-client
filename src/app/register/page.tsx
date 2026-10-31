@@ -9,7 +9,7 @@ import { RegisterForm } from "./register-form";
 export const metadata: Metadata = {
   title: "Create an account",
   description:
-    "Create your ShebaSetu account to organise and join community service events.",
+    "Create your SDEP account to organise and join community service events.",
 };
 
 export default function RegisterPage() {
