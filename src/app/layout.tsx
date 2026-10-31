@@ -1,19 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 
 import { AppProviders } from "@/providers/app-providers";
 import { siteConfig } from "@/lib/site";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 
 import "./globals.css";
 
-const bodyFont = Plus_Jakarta_Sans({
-  variable: "--font-body",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const headingFont = Fraunces({
-  variable: "--font-heading",
+const sansFont = Plus_Jakarta_Sans({
+  variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
 });
@@ -26,25 +22,6 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
-  keywords: [
-    "community service",
-    "volunteer events",
-    "social development",
-    "Dhaka volunteers",
-    "charity events",
-  ],
-  openGraph: {
-    type: "website",
-    siteName: siteConfig.name,
-    title: `${siteConfig.name} — Community Service Events`,
-    description: siteConfig.description,
-    url: siteConfig.url,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${siteConfig.name} — Community Service Events`,
-    description: siteConfig.description,
-  },
 };
 
 export const viewport: Viewport = {
@@ -54,15 +31,24 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${bodyFont.variable} ${headingFont.variable}`}
+      className={sansFont.variable}
     >
-      <body className="flex min-h-svh flex-col overflow-x-hidden">
-        <AppProviders>{children}</AppProviders>
+      <body
+        className="flex min-h-svh flex-col overflow-x-hidden bg-base-100 text-base-content font-sans"
+        suppressHydrationWarning
+      >
+        <AppProviders>
+          <SiteHeader />
+          <main className="flex flex-1 flex-col">
+            {children}
+          </main>
+          <SiteFooter />
+        </AppProviders>
       </body>
     </html>
   );
