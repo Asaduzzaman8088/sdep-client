@@ -1,8 +1,4 @@
-import Link from "next/link";
 import { CalendarHeart, HeartHandshake, Sprout, Users } from "lucide-react";
-
-import { SiteLogo } from "@/components/site-logo";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 const highlights = [
   {
@@ -31,17 +27,7 @@ export function AuthShell({
   footer: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-svh flex-col bg-base-100">
-      <div className="page-shell flex items-center justify-between py-5">
-        <SiteLogo />
-        <div className="flex items-center gap-2">
-          <Link href="/" className="btn btn-ghost btn-sm hidden sm:inline-flex">
-            Back to home
-          </Link>
-          <ThemeToggle />
-        </div>
-      </div>
-
+    <div className="flex flex-1 flex-col py-8 sm:py-12">
       <div className="page-shell grid flex-1 items-stretch gap-8 pb-10 lg:grid-cols-[1fr_1fr]">
         <aside className="relative hidden overflow-hidden rounded-box bg-neutral p-10 text-neutral-content lg:flex lg:flex-col lg:justify-between">
           <div
@@ -57,11 +43,11 @@ export function AuthShell({
               <HeartHandshake className="size-4" aria-hidden />
               Community first
             </span>
-            <h2 className="mt-8 max-w-md font-display text-4xl leading-tight font-semibold text-white">
+            <h2 className="mt-8 max-w-md font-sans text-4xl leading-tight font-semibold text-white">
               Service feels better when it is shared.
             </h2>
             <p className="mt-4 max-w-md text-sm leading-relaxed text-white/70">
-              ShebaSetu is a home for the people who show up: the planters, the
+              SDEP is a home for the people who show up: the planters, the
               cooks, the collectors, and the neighbors who make a city kinder.
             </p>
             <ul className="mt-8 space-y-4">
@@ -80,7 +66,7 @@ export function AuthShell({
             &ldquo;The best communities are not built by one big gesture. They are
             built by many small ones, repeated.&rdquo;
             <footer className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-              ShebaSetu community note
+              SDEP community note
             </footer>
           </blockquote>
         </aside>
