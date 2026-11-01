@@ -10,8 +10,15 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
-    const email = (body.email || "soponmd6@gmail.com").toLowerCase().trim();
-    const name = body.name || "Asaduzzaman";
+    if (!body.email) {
+      return NextResponse.json(
+        { error: "Google account email is required." },
+        { status: 400 }
+      );
+    }
+
+    const email = body.email.toLowerCase().trim();
+    const name = body.name || email.split("@")[0];
     const image =
       body.image ||
       "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80";

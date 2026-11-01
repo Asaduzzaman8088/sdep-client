@@ -7,6 +7,10 @@ import { toast } from "sonner";
 import { GoogleIcon } from "@/components/icons/google-icon";
 import { authClient } from "@/lib/auth-client";
 import { clearAuthTokenCache } from "@/lib/api";
+import {
+  GoogleAccountModal,
+  type GoogleProfile,
+} from "@/components/auth/google-account-modal";
 
 export function GoogleButton({
   callbackURL,
@@ -17,6 +21,8 @@ export function GoogleButton({
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [signingInEmail, setSigningInEmail] = useState<string | null>(null);
 
   const handleClick = async () => {
     setIsLoading(true);
@@ -29,6 +35,7 @@ export function GoogleButton({
 
       if (isGoogleConfigured) {
         // Run live Google OAuth flow with Google's servers
+        // prompt: "select_account" is configured on server so Google prompts account picker
         const { error } = await authClient.signIn.social({
           provider: "google",
           callbackURL,
@@ -40,14 +47,28 @@ export function GoogleButton({
         return;
       }
 
-      // 2. Seamless Google Sign-In Fallback (when GOOGLE_CLIENT_ID is not yet supplied in .env)
-      const enteredEmail = getEmail ? getEmail()?.trim() : undefined;
+      // 2. Open interactive Google Account Selector modal
+      setIsLoading(false);
+      setIsModalOpen(true);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Google sign-in error";
+      toast.error(msg);
+      setIsLoading(false);
+    }
+  };
+
+  const handleSelectAccount = async (account: GoogleProfile) => {
+    setSigningInEmail(account.email);
+
+    try {
       const res = await fetch("/api/auth/google", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           callbackURL,
-          ...(enteredEmail ? { email: enteredEmail } : {}),
+          email: account.email,
+          name: account.name,
+          image: account.image,
         }),
       });
 
@@ -59,33 +80,45 @@ export function GoogleButton({
 
       clearAuthTokenCache();
       toast.success("Signed in with Google successfully!", {
-        description: `Welcome back, ${data.user?.name || "Asaduzzaman"}!`,
+        description: `Welcome back, ${data.user?.name || account.name}!`,
       });
 
+      setIsModalOpen(false);
       const targetPath = callbackURL || "/";
       router.push(targetPath);
       router.refresh();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Google sign-in error";
       toast.error(msg);
-      setIsLoading(false);
+    } finally {
+      setSigningInEmail(null);
     }
   };
 
   return (
-    <button
-      type="button"
-      className="btn btn-outline w-full gap-2.5 font-semibold text-sm hover:border-primary hover:bg-primary/5 transition-all"
-      onClick={handleClick}
-      disabled={isLoading}
-      aria-label="Continue with Google"
-    >
-      {isLoading ? (
-        <span className="loading loading-spinner loading-sm" aria-hidden />
-      ) : (
-        <GoogleIcon className="size-4" />
-      )}
-      Continue with Google
-    </button>
+    <>
+      <button
+        type="button"
+        className="btn btn-outline w-full gap-2.5 font-semibold text-sm hover:border-primary hover:bg-primary/5 transition-all"
+        onClick={handleClick}
+        disabled={isLoading || Boolean(signingInEmail)}
+        aria-label="Continue with Google"
+      >
+        {isLoading ? (
+          <span className="loading loading-spinner loading-sm" aria-hidden />
+        ) : (
+          <GoogleIcon className="size-4" />
+        )}
+        Continue with Google
+      </button>
+
+      <GoogleAccountModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelectAccount={handleSelectAccount}
+        signingInEmail={signingInEmail}
+        prefilledEmail={getEmail ? getEmail()?.trim() : undefined}
+      />
+    </>
   );
 }
