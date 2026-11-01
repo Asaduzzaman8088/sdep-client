@@ -13,6 +13,9 @@ function getBaseUrl(): string {
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
   }
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL.replace(/\/$/, "")}`;
+  }
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
   }
@@ -205,18 +208,34 @@ export const auth = betterAuth({
       },
     },
   },
-  trustedOrigins: Array.from(
-    new Set([
-      authBaseUrl,
-      "http://localhost:3000",
-      "http://127.0.0.1:3000",
-      "http://localhost:5000",
-      "https://*.vercel.app",
-      "https://sdep-client.vercel.app",
-      ...(process.env.NEXT_PUBLIC_SITE_URL ? [process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")] : []),
-      ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL.replace(/\/$/, "")}`] : []),
-    ]),
-  ),
+  trustedOrigins: async (request) => {
+    const origin = request?.headers?.get("origin");
+    const referer = request?.headers?.get("referer");
+    const dynamicOrigins: string[] = [];
+    if (origin) dynamicOrigins.push(origin);
+    if (referer) {
+      try {
+        dynamicOrigins.push(new URL(referer).origin);
+      } catch {
+        // ignore invalid referer
+      }
+    }
+    return Array.from(
+      new Set([
+        authBaseUrl,
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5000",
+        "https://*.vercel.app",
+        "https://sdep-client.vercel.app",
+        "https://sdep.vercel.app",
+        ...(process.env.NEXT_PUBLIC_SITE_URL ? [process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")] : []),
+        ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL.replace(/\/$/, "")}`] : []),
+        ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL.replace(/\/$/, "")}`] : []),
+        ...dynamicOrigins,
+      ])
+    );
+  },
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
