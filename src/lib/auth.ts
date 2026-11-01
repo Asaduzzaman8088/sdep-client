@@ -38,6 +38,27 @@ if (process.env.NODE_ENV !== "production") {
 
 const database = mongoClient.db(databaseName);
 
+// Ensure documents from any legacy "user" collection are automatically mirrored to "users"
+async function syncLegacyUserCollection() {
+  try {
+    const legacyUsers = await database.collection("user").find({}).toArray();
+    if (legacyUsers && legacyUsers.length > 0) {
+      for (const doc of legacyUsers) {
+        const userCopy: Record<string, unknown> = { ...doc };
+        delete userCopy._id;
+        await database.collection("users").updateOne(
+          { email: doc.email },
+          { $set: userCopy, $setOnInsert: { createdAt: doc.createdAt || new Date() } },
+          { upsert: true }
+        );
+      }
+    }
+  } catch {
+    // Ignore migration errors during connection init
+  }
+}
+syncLegacyUserCollection();
+
 const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim() ?? "";
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim() ?? "";
 export const isGoogleConfigured = Boolean(googleClientId && googleClientSecret);
@@ -98,6 +119,29 @@ const googleDirectPlugin = () => ({
           });
         }
 
+        // Explicitly ensure user is saved in MongoDB "users" collection
+        try {
+          await database.collection("users").updateOne(
+            { email: user.email },
+            {
+              $set: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                image: user.image ?? "",
+                emailVerified: true,
+                updatedAt: new Date(),
+              },
+              $setOnInsert: {
+                createdAt: new Date(),
+              },
+            },
+            { upsert: true }
+          );
+        } catch (e) {
+          console.error("Failed to sync user to users collection:", e);
+        }
+
         // 4. Set signed session cookies directly on the response
         await setSessionCookie(ctx, {
           session,
@@ -129,6 +173,38 @@ export const auth = betterAuth({
     client: mongoClient,
     transaction: false,
   }),
+  user: {
+    modelName: "users",
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (createdUser) => {
+          try {
+            await database.collection("users").updateOne(
+              { email: createdUser.email },
+              {
+                $set: {
+                  id: createdUser.id,
+                  name: createdUser.name,
+                  email: createdUser.email,
+                  image: createdUser.image ?? "",
+                  emailVerified: Boolean(createdUser.emailVerified),
+                  updatedAt: new Date(),
+                },
+                $setOnInsert: {
+                  createdAt: new Date(),
+                },
+              },
+              { upsert: true }
+            );
+          } catch (e) {
+            console.error("Failed to sync user to users collection:", e);
+          }
+        },
+      },
+    },
+  },
   trustedOrigins: Array.from(
     new Set([
       authBaseUrl,
