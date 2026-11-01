@@ -7,14 +7,14 @@ import { siteConfig } from "@/lib/site";
 const exploreLinks = [
   { label: "Home", href: "/" },
   { label: "Upcoming Events", href: "/events" },
-  { label: "Create Event", href: "/events/create" },
+  { label: "Create Event", href: "/create-event" },
 ];
 
 const accountLinks = [
   { label: "Login", href: "/login" },
   { label: "Create Account", href: "/register" },
-  { label: "Joined Events", href: "/events/joined" },
-  { label: "Manage Events", href: "/events/manage" },
+  { label: "Joined Events", href: "/joined-events" },
+  { label: "Manage Events", href: "/manage-events" },
 ];
 
 const socials = [
@@ -202,7 +202,7 @@ export function SiteFooter() {
           </ul>
 
           <Link
-            href="/events/create"
+            href="/create-event"
             className="btn btn-primary btn-sm mt-6 gap-1.5"
           >
             Start an event
