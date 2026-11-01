@@ -29,6 +29,7 @@ export function RegisterForm() {
     register,
     handleSubmit,
     control,
+    getValues,
     formState: { errors },
   } = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -210,7 +211,7 @@ export function RegisterForm() {
 
       <div className="divider my-0 text-xs text-base-content/45">or</div>
 
-      <GoogleButton callbackURL={nextPath} />
+      <GoogleButton callbackURL={nextPath} getEmail={() => getValues("email")} />
     </div>
   );
 }

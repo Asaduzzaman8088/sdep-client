@@ -8,7 +8,13 @@ import { GoogleIcon } from "@/components/icons/google-icon";
 import { authClient } from "@/lib/auth-client";
 import { clearAuthTokenCache } from "@/lib/api";
 
-export function GoogleButton({ callbackURL }: { callbackURL: string }) {
+export function GoogleButton({
+  callbackURL,
+  getEmail,
+}: {
+  callbackURL: string;
+  getEmail?: () => string | undefined;
+}) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -35,10 +41,14 @@ export function GoogleButton({ callbackURL }: { callbackURL: string }) {
       }
 
       // 2. Seamless Google Sign-In Fallback (when GOOGLE_CLIENT_ID is not yet supplied in .env)
+      const enteredEmail = getEmail ? getEmail()?.trim() : undefined;
       const res = await fetch("/api/auth/google", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ callbackURL }),
+        body: JSON.stringify({
+          callbackURL,
+          ...(enteredEmail ? { email: enteredEmail } : {}),
+        }),
       });
 
       const data = await res.json().catch(() => ({}));

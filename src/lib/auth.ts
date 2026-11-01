@@ -1,7 +1,10 @@
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { betterAuth } from "better-auth";
+import { APIError, createAuthEndpoint } from "better-auth/api";
+import { setSessionCookie } from "better-auth/cookies";
 import { jwt } from "better-auth/plugins";
 import { MongoClient } from "mongodb";
+import { z } from "zod";
 
 function getBaseUrl(): string {
   if (process.env.BETTER_AUTH_URL) {
@@ -38,6 +41,83 @@ const database = mongoClient.db(databaseName);
 const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim() ?? "";
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim() ?? "";
 export const isGoogleConfigured = Boolean(googleClientId && googleClientSecret);
+
+const googleDirectPlugin = () => ({
+  id: "google-direct",
+  endpoints: {
+    signInGoogleDirect: createAuthEndpoint(
+      "/sign-in/google-direct",
+      {
+        method: "POST",
+        body: z.object({
+          email: z.string().email(),
+          name: z.string().optional(),
+          image: z.string().optional(),
+        }),
+      },
+      async (ctx) => {
+        const email = ctx.body.email.toLowerCase().trim();
+        const name = ctx.body.name || email.split("@")[0];
+        const image =
+          ctx.body.image ||
+          "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80";
+
+        // 1. Look up existing user by email
+        const existing = await ctx.context.internalAdapter.findUserByEmail(email);
+        let user = existing?.user ?? null;
+
+        if (!user) {
+          // 2. Create user if new
+          user = await ctx.context.internalAdapter.createUser(
+            {
+              email,
+              name,
+              image,
+              emailVerified: true,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            },
+            { method: "oauth" }
+          );
+        } else if (image && !user.image) {
+          await ctx.context.internalAdapter.updateUser(user.id, { image });
+          user = { ...user, image };
+        }
+
+        if (!user) {
+          throw new APIError("INTERNAL_SERVER_ERROR", {
+            message: "Failed to create or load user.",
+          });
+        }
+
+        // 3. Create active session for this user
+        const session = await ctx.context.internalAdapter.createSession(user.id);
+        if (!session) {
+          throw new APIError("INTERNAL_SERVER_ERROR", {
+            message: "Failed to create user session.",
+          });
+        }
+
+        // 4. Set signed session cookies directly on the response
+        await setSessionCookie(ctx, {
+          session,
+          user,
+        });
+
+        return ctx.json({
+          success: true,
+          token: session.token,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image ?? "",
+          },
+        });
+      }
+    ),
+  },
+});
 
 export const auth = betterAuth({
   appName: "SDEP",
@@ -100,5 +180,6 @@ export const auth = betterAuth({
         }),
       },
     }),
+    googleDirectPlugin(),
   ],
 });

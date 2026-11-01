@@ -24,6 +24,7 @@ export function LoginForm() {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -125,7 +126,7 @@ export function LoginForm() {
 
       <div className="divider my-0 text-xs text-base-content/45">or</div>
 
-      <GoogleButton callbackURL={nextPath} />
+      <GoogleButton callbackURL={nextPath} getEmail={() => getValues("email")} />
     </div>
   );
 }
