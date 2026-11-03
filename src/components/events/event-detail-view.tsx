@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,9 +19,10 @@ import {
 import { format, parseISO } from "date-fns";
 import { toast } from "sonner";
 
-import type { EventItem } from "@/types";
+import type { EventItem, EventDetail } from "@/types";
 import { authClient } from "@/lib/auth-client";
-import { apiRequest } from "@/lib/api";
+import { apiRequest, ApiError, clearAuthTokenCache } from "@/lib/api";
+import type { JoinResponse } from "@/types";
 
 interface EventDetailViewProps {
   initialEvent: EventItem;
@@ -31,8 +32,36 @@ export function EventDetailView({ initialEvent }: EventDetailViewProps) {
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const [event, setEvent] = useState<EventItem>(initialEvent);
-  const [isJoined, setIsJoined] = useState(false);
+  const [isJoined, setIsJoined] = useState<boolean>(
+    (initialEvent as EventDetail)?.isJoined === true
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const eventId = initialEvent.id;
+
+  // Hydrate join state from the API once a session exists (SSR fetch is unauthenticated).
+  useEffect(() => {
+    if (!session?.user) return;
+
+    let cancelled = false;
+    const hydrateJoinState = async () => {
+      try {
+        const data = await apiRequest<{ event: EventDetail }>(
+          `/api/events/${eventId}`
+        );
+        if (cancelled || !data?.event) return;
+        setIsJoined(Boolean(data.event.isJoined));
+        setEvent((prev) => ({ ...prev, joinedCount: data.event.joinedCount }));
+      } catch {
+        // Hydration is best-effort; keep local state on failure.
+      }
+    };
+
+    hydrateJoinState();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.user, eventId]);
 
   let eventDateObj: Date;
   try {
@@ -68,32 +97,44 @@ export function EventDetailView({ initialEvent }: EventDetailViewProps) {
     try {
       if (isJoined) {
         // Leave
-        await apiRequest(`/api/events/${event.id}/join`, { method: "DELETE" }).catch(() => {
-          // Graceful fallback for mock mode
-        });
-        setIsJoined(false);
+        const data = await apiRequest<JoinResponse>(
+          `/api/events/${event.id}/join`,
+          { method: "DELETE" }
+        );
+        setIsJoined(Boolean(data.isJoined));
         setEvent((prev) => ({
           ...prev,
-          joinedCount: Math.max(0, prev.joinedCount - 1),
+          joinedCount: typeof data.joinedCount === "number" ? data.joinedCount : Math.max(0, prev.joinedCount - 1),
         }));
         toast.success("You have left this event.");
       } else {
         // Join
-        await apiRequest(`/api/events/${event.id}/join`, { method: "POST" }).catch(() => {
-          // Graceful fallback for mock mode
-        });
-        setIsJoined(true);
+        const data = await apiRequest<JoinResponse>(
+          `/api/events/${event.id}/join`,
+          { method: "POST" }
+        );
+        setIsJoined(Boolean(data.isJoined));
         setEvent((prev) => ({
           ...prev,
-          joinedCount: prev.joinedCount + 1,
+          joinedCount: typeof data.joinedCount === "number" ? data.joinedCount : prev.joinedCount + 1,
         }));
         toast.success("Awesome! You have successfully joined this event.", {
           description: "We look forward to seeing you make a difference with us!",
         });
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to update attendance";
-      toast.error(msg);
+      if (err instanceof ApiError && err.status === 401) {
+        clearAuthTokenCache();
+        toast.info("Your session has expired. Please sign in again.", {
+          action: {
+            label: "Sign in",
+            onClick: () => router.push("/login"),
+          },
+        });
+      } else {
+        const msg = err instanceof Error ? err.message : "Failed to update attendance";
+        toast.error(msg);
+      }
     } finally {
       setIsSubmitting(false);
     }
