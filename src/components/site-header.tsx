@@ -36,7 +36,7 @@ export function SiteHeader() {
         {/* Center Nav: Upcoming Events */}
         <nav className="hidden sm:flex items-center gap-6">
           <Link
-            href="/upcoming-events"
+            href="/events"
             className="btn btn-ghost btn-sm font-semibold text-base-content/80 hover:text-primary transition-colors"
           >
             Upcoming Events

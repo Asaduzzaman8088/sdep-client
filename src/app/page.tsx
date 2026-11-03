@@ -68,7 +68,7 @@ export default function Home() {
               something your community needs today.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/upcoming-events" className="btn btn-primary btn-lg rounded-full font-bold shadow-md">
+              <Link href="/events" className="btn btn-primary btn-lg rounded-full font-bold shadow-md">
                 Explore upcoming events
                 <ArrowRight className="size-4" aria-hidden />
               </Link>

@@ -102,7 +102,7 @@ export default function JoinedEventsPage() {
         </div>
 
         <Link
-          href="/upcoming-events"
+          href="/events"
           className="btn btn-outline btn-sm rounded-full gap-2 self-start sm:self-auto font-semibold"
         >
           <Calendar className="size-4" />
@@ -227,7 +227,7 @@ export default function JoinedEventsPage() {
             Find an upcoming drive in Dhaka that inspires you—winter clothes distribution, cleanups, tree plantations, or free health camps.
           </p>
           <Link
-            href="/upcoming-events"
+            href="/events"
             className="btn btn-primary rounded-full mt-6 gap-2 font-bold shadow-md"
           >
             <Sparkles className="size-4" />

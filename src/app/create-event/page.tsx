@@ -104,7 +104,7 @@ export default function CreateEventPage() {
       });
 
       // Redirect to upcoming events per requirements
-      router.push("/upcoming-events");
+      router.push("/events");
       router.refresh();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to create event. Please try again.";
@@ -320,7 +320,7 @@ export default function CreateEventPage() {
 
         {/* Submit button */}
         <div className="flex items-center justify-end gap-3 pt-4 border-t border-base-200">
-          <Link href="/upcoming-events" className="btn btn-ghost btn-sm rounded-full">
+          <Link href="/events" className="btn btn-ghost btn-sm rounded-full">
             Cancel
           </Link>
           <button
