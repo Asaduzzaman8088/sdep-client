@@ -15,14 +15,13 @@ import {
   Sparkles,
   Trash2,
   Users,
-  X,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import type { EventItem, EventsResponse } from "@/types";
 import { authClient } from "@/lib/auth-client";
 import { apiRequest } from "@/lib/api";
-import { eventTypes } from "@/lib/site";
+import { EditEventForm } from "@/components/events/edit-event-form";
 
 export default function ManageEventsPage() {
   const queryClient = useQueryClient();
@@ -261,116 +260,20 @@ export default function ManageEventsPage() {
       {editingEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
           <div className="w-full max-w-lg rounded-3xl border border-base-300 bg-base-100 p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-base-200 pb-3">
-              <h3 className="text-lg font-bold text-base-content">
-                Update Event Details
-              </h3>
-              <button
-                type="button"
-                onClick={() => setEditingEvent(null)}
-                className="btn btn-ghost btn-circle btn-xs"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.currentTarget;
-                const title = (form.elements.namedItem("title") as HTMLInputElement).value;
-                const eventType = (form.elements.namedItem("eventType") as HTMLSelectElement).value;
-                const location = (form.elements.namedItem("location") as HTMLInputElement).value;
-                const capacity = Number((form.elements.namedItem("capacity") as HTMLInputElement).value);
-                const description = (form.elements.namedItem("description") as HTMLTextAreaElement).value;
-
+            <EditEventForm
+              key={editingEvent.id}
+              event={editingEvent}
+              isSubmitting={updateMutation.isPending}
+              onCancel={() => setEditingEvent(null)}
+              onSubmit={(values) => {
+                const { eventDate, ...rest } = values;
                 updateMutation.mutate({
                   id: editingEvent.id,
-                  title,
-                  eventType,
-                  location,
-                  capacity,
-                  description,
+                  ...rest,
+                  eventDate: new Date(eventDate).toISOString(),
                 });
               }}
-              className="space-y-4"
-            >
-              <div>
-                <label className="block text-xs font-bold mb-1">Title</label>
-                <input
-                  name="title"
-                  defaultValue={editingEvent.title}
-                  className="input input-bordered w-full text-sm"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold mb-1">Type</label>
-                  <select
-                    name="eventType"
-                    defaultValue={editingEvent.eventType}
-                    className="select select-bordered w-full text-sm"
-                  >
-                    {eventTypes.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold mb-1">Capacity</label>
-                  <input
-                    name="capacity"
-                    type="number"
-                    defaultValue={editingEvent.capacity}
-                    className="input input-bordered w-full text-sm"
-                    min="1"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold mb-1">Location</label>
-                <input
-                  name="location"
-                  defaultValue={editingEvent.location}
-                  className="input input-bordered w-full text-sm"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold mb-1">Description</label>
-                <textarea
-                  name="description"
-                  defaultValue={editingEvent.description}
-                  rows={4}
-                  className="textarea textarea-bordered w-full text-sm"
-                  required
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 pt-3 border-t border-base-200">
-                <button
-                  type="button"
-                  onClick={() => setEditingEvent(null)}
-                  className="btn btn-ghost btn-sm rounded-full"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={updateMutation.isPending}
-                  className="btn btn-primary btn-sm rounded-full px-5 font-bold"
-                >
-                  {updateMutation.isPending ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
-            </form>
+            />
           </div>
         </div>
       )}

@@ -89,14 +89,18 @@ export const eventFormSchema = z.object({
     .refine((value) => new Date(value).getTime() > Date.now(), {
       message: "Event date must be in the future.",
     }),
-  capacity: z.coerce
-    .number()
+  capacity: z
+    .number({ message: "Capacity is required." })
     .int("Capacity must be a whole number.")
-    .min(0, "Capacity cannot be negative.")
-    .max(100_000, "Capacity cannot exceed 100000."),
+    .min(1, "Capacity must be at least 1 volunteer.")
+    .max(10_000, "Capacity cannot exceed 10,000."),
 });
 
 export type EventFormInput = z.infer<typeof eventFormSchema>;
+
+// The Edit (Update Event) form validates against the same rules as Create.
+export const updateEventSchema = eventFormSchema;
+export type UpdateEventValues = z.infer<typeof updateEventSchema>;
 
 export function getPasswordChecks(password: string) {
   return [
