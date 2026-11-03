@@ -137,3 +137,40 @@
     @apply text-3xl font-semibold sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1];
   }
 }
+
+/* Unlayered so these win over daisyUI's nested focus/outline rules */
+
+/* Smooth transitions on all form controls */
+.input,
+.select,
+.textarea {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+/* Focus: change border color only — no separate outline ring */
+.input:focus,
+.input:focus-within,
+.select:focus,
+.select:focus-within,
+.select:open,
+.textarea:focus,
+.textarea:focus-within {
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  border-color: var(--color-primary);
+}
+
+/* Filled color buttons: darker border so light primary/info reads as a button */
+.btn-primary,
+.btn-secondary,
+.btn-accent,
+.btn-info,
+.btn-success,
+.btn-warning,
+.btn-error {
+  border-color: color-mix(in oklab, var(--btn-color, var(--color-primary)), #000 25%);
+}

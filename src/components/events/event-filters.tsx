@@ -111,10 +111,10 @@ export function EventFilters({
         <button
           type="button"
           onClick={() => onTypeChange("All")}
-          className={`btn btn-sm rounded-full px-3.5 text-xs font-semibold transition-all ${
+          className={`btn btn-sm rounded-full border px-3.5 text-xs font-semibold transition-all ${
             selectedType === "All" || !selectedType
-              ? "btn-primary shadow-sm"
-              : "btn-ghost border border-base-300 text-base-content/80 hover:bg-base-200"
+              ? "btn-primary border-primary/40 shadow-sm"
+              : "btn-ghost border-base-300 text-base-content/80 hover:bg-base-200"
           }`}
         >
           All Causes
@@ -127,10 +127,10 @@ export function EventFilters({
               key={type}
               type="button"
               onClick={() => onTypeChange(type)}
-              className={`btn btn-sm rounded-full px-3.5 text-xs font-semibold transition-all ${
+              className={`btn btn-sm rounded-full border px-3.5 text-xs font-semibold transition-all ${
                 isActive
-                  ? "btn-primary shadow-sm"
-                  : "btn-ghost border border-base-300 text-base-content/80 hover:bg-base-200"
+                  ? "btn-primary border-primary/40 shadow-sm"
+                  : "btn-ghost border-base-300 text-base-content/80 hover:bg-base-200"
               }`}
             >
               {type}
