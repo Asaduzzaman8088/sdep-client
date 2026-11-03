@@ -2,12 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarX, Sparkles, PlusCircle } from "lucide-react";
+import { CalendarX, Sparkles, PlusCircle, CloudOff } from "lucide-react";
 import Link from "next/link";
 import { isFuture, parseISO } from "date-fns";
 
 import type { EventItem, PaginatedEventsResponse } from "@/types";
-import { MOCK_UPCOMING_EVENTS } from "@/data/mock-events";
 import { EventCard } from "./event-card";
 import { EventFilters } from "./event-filters";
 import { EventGridSkeleton } from "./event-skeleton";
@@ -19,8 +18,8 @@ export function EventsView() {
   const [sortBy, setSortBy] = useState("date-asc");
   const [currentTime] = useState(() => Date.now());
 
-  // Fetch from backend API if running
-  const { data: apiData, isLoading } = useQuery<PaginatedEventsResponse>({
+  // Fetch from backend API
+  const { data: apiData, isLoading, isError } = useQuery<PaginatedEventsResponse>({
     queryKey: ["events", "list"],
     queryFn: async () => {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -34,12 +33,9 @@ export function EventsView() {
     staleTime: 60_000,
   });
 
-  // Base list: prefer API events if available and non-empty, otherwise use comprehensive mock data
+  // Base list: strictly database events, no mock fallback
   const rawEvents: EventItem[] = useMemo(() => {
-    if (apiData?.events && apiData.events.length > 0) {
-      return apiData.events;
-    }
-    return MOCK_UPCOMING_EVENTS;
+    return apiData?.events ?? [];
   }, [apiData]);
 
   // Requirement from sdep.txt: Keep in mind that this page will only show upcoming events.
@@ -124,9 +120,28 @@ export function EventsView() {
         onClearFilters={handleClearFilters}
       />
 
-      {/* Grid of Events or Loading Skeleton or Empty State */}
+      {/* Grid of Events or Loading Skeleton or Error State or Empty State */}
       {isLoading ? (
         <EventGridSkeleton count={6} />
+      ) : isError ? (
+        <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-error/40 bg-base-100/50 py-16 px-6 text-center">
+          <div className="flex size-16 items-center justify-center rounded-2xl bg-error/10 text-error">
+            <CloudOff className="size-8" />
+          </div>
+          <h3 className="mt-5 text-xl font-bold text-base-content">
+            We couldn&apos;t load the events
+          </h3>
+          <p className="mt-2 max-w-md text-sm text-base-content/70">
+            The event service is temporarily unavailable. Please refresh the page or try again in a few moments.
+          </p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="btn btn-primary btn-sm rounded-full mt-6"
+          >
+            Try again
+          </button>
+        </div>
       ) : filteredEvents.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredEvents.map((event) => (
