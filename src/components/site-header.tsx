@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 import { SiteLogo } from "@/components/site-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { clearAuthTokenCache } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 
 export function SiteHeader() {
@@ -22,6 +23,8 @@ export function SiteHeader() {
       router.refresh();
     } catch {
       toast.error("Failed to sign out. Please try again.");
+    } finally {
+      clearAuthTokenCache();
     }
   };
 
