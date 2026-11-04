@@ -22,9 +22,12 @@ function getBaseUrl(): string {
 const authBaseUrl = getBaseUrl();
 
 const databaseName = process.env.DB_NAME ?? "sdep";
-const mongoUri =
-  process.env.MONGODB_URI ||
-  "mongodb://sdep:AUBuQaFTI6U0C39W@ac-fdwbtuv-shard-00-00.8d1n9vg.mongodb.net:27017,ac-fdwbtuv-shard-00-01.8d1n9vg.mongodb.net:27017,ac-fdwbtuv-shard-00-02.8d1n9vg.mongodb.net:27017/?ssl=true&replicaSet=atlas-1m1cx9-shard-0&authSource=admin";
+const mongoUri = process.env.MONGODB_URI;
+if (!mongoUri) {
+  throw new Error(
+    "MONGODB_URI is not set. Define it in .env for local development or in Vercel environment variables for production."
+  );
+}
 
 const globalForAuth = globalThis as unknown as {
   mongoClient?: MongoClient;

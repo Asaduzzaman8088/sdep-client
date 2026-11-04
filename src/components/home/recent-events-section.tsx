@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, CalendarDays, CloudOff, PlusCircle, Sparkles } from "lucide-react";
 
 import type { EventItem, EventsResponse } from "@/types";
+import { getApiUrl } from "@/lib/api-url";
 import { EventCard } from "@/components/events/event-card";
 import { EventGridSkeleton } from "@/components/events/event-skeleton";
 
@@ -12,8 +13,7 @@ export function RecentEventsSection() {
   const { data, isError, isLoading } = useQuery<EventsResponse>({
     queryKey: ["events", "recent-upcoming"],
     queryFn: async () => {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      const res = await fetch(`${apiUrl}/api/events/upcoming?limit=6`);
+      const res = await fetch(getApiUrl("/api/events/upcoming?limit=6"));
       if (!res.ok) throw new Error("Failed to fetch upcoming events");
       return res.json();
     },

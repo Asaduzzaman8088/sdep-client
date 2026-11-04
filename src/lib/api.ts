@@ -1,9 +1,8 @@
 "use client";
 
-const apiBaseUrl = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000").replace(
-  /\/$/,
-  "",
-);
+import { getApiBaseUrl, getApiUrl } from "./api-url";
+
+const apiBaseUrl = getApiBaseUrl();
 
 let cachedToken: { token: string; expiresAt: number } | null = null;
 
@@ -38,11 +37,18 @@ export async function getAuthToken(forceRefresh = false) {
     return cachedToken.token;
   }
 
-  const response = await fetch("/api/auth/token", {
-    method: "GET",
-    credentials: "include",
-    cache: "no-store",
-  });
+  let response: Response;
+
+  try {
+    response = await fetch("/api/auth/token", {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+    });
+  } catch {
+    cachedToken = null;
+    return null;
+  }
 
   if (!response.ok) {
     cachedToken = null;
@@ -90,15 +96,25 @@ export async function apiRequest<T>(
   const token = await getAuthToken();
   const { headers, ...rest } = options;
 
-  const response = await fetch(`${apiBaseUrl}${path}`, {
-    ...rest,
-    headers: {
-      Accept: "application/json",
-      ...(rest.body ? { "Content-Type": "application/json" } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...headers,
-    },
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(getApiUrl(path), {
+      ...rest,
+      headers: {
+        Accept: "application/json",
+        ...(rest.body ? { "Content-Type": "application/json" } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...headers,
+      },
+    });
+  } catch (error) {
+    throw new ApiError(
+      "Unable to reach the server. Please check your connection and try again.",
+      0,
+      error,
+    );
+  }
 
   const data = (await response.json().catch(() => null)) as
     | (T & { message?: string; details?: unknown })

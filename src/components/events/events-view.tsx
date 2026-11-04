@@ -7,6 +7,7 @@ import Link from "next/link";
 import { isFuture, parseISO } from "date-fns";
 
 import type { EventItem, PaginatedEventsResponse } from "@/types";
+import { getApiUrl } from "@/lib/api-url";
 import { EventCard } from "./event-card";
 import { EventFilters } from "./event-filters";
 import { EventGridSkeleton } from "./event-skeleton";
@@ -22,8 +23,7 @@ export function EventsView() {
   const { data: apiData, isLoading, isError } = useQuery<PaginatedEventsResponse>({
     queryKey: ["events", "list"],
     queryFn: async () => {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      const res = await fetch(`${apiUrl}/api/events?limit=50`);
+      const res = await fetch(getApiUrl("/api/events?limit=50"));
       if (!res.ok) {
         throw new Error("Failed to fetch events from API");
       }

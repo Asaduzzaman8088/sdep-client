@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CloudOff } from "lucide-react";
 import type { EventItem } from "@/types";
+import { getApiUrl } from "@/lib/api-url";
 import { EventDetailView } from "@/components/events/event-detail-view";
 
 interface EventDetailPageProps {
@@ -20,10 +21,8 @@ async function getEvent(id: string): Promise<GetEventResult> {
     return { status: "not-found" };
   }
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
   try {
-    const res = await fetch(`${apiUrl}/api/events/${id}`, { cache: "no-store" });
+    const res = await fetch(getApiUrl(`/api/events/${id}`), { cache: "no-store" });
     if (res.ok) {
       const data = await res.json();
       if (data?.event) return { status: "ok", event: data.event };
